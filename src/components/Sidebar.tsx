@@ -40,7 +40,7 @@ function Sidebar({
   addNote,
   deleteNote,
 }: SidebarProps) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const location = useLocation(); // Get current route
 
   useEffect(() => {

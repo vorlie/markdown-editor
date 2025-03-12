@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import { TextField, Paper, Typography, Box, Button, Divider } from "@mui/material";
+import {
+  TextField,
+  Paper,
+  Typography,
+  Box,
+  Fab,
+  Divider,
+  useMediaQuery,
+  Theme,
+} from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 
 interface Note {
@@ -18,16 +27,33 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
   const [title, setTitle] = useState("");
   const [markdown, setMarkdown] = useState("");
 
+  // Check if screen size is small (mobile)
+  const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("md")
+  );
+
   useEffect(() => {
     setTitle(selectedNote?.title || "");
     setMarkdown(selectedNote?.content || "");
   }, [selectedNote]);
 
   const saveNote = () => {
-    if (!selectedNote) return;
+    if (!title.trim() && !markdown.trim()) return; // Prevent empty notes
 
+    if (!selectedNote) {
+      // Create a new note if none is selected
+      const newNote = { title: title || "Untitled", content: markdown };
+      const updatedNotes = [...notes, newNote];
+      setNotes(updatedNotes);
+      localStorage.setItem("notes", JSON.stringify(updatedNotes));
+      return;
+    }
+
+    // Update existing note
     const updatedNotes = notes.map((note) =>
-      note.title === selectedNote.title ? { ...note, title, content: markdown } : note
+      note.title === selectedNote.title
+        ? { ...note, title, content: markdown }
+        : note
     );
 
     setNotes(updatedNotes);
@@ -35,64 +61,107 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
   };
 
   return (
-    <Box 
-      sx={{ 
-        display: "flex", 
-        height: "100vh", 
-        width: "100vw", 
-        gap: 2, 
-        p: 2 
-      }}
-    >
-      {/* Left: Markdown Editor */}
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-        <TextField
-          label="Note Title"
-          fullWidth
-          variant="outlined"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <TextField
-          label="Write Markdown"
-          multiline
-          fullWidth
-          rows={33}
-          variant="outlined"
-          value={markdown}
-          onChange={(e) => setMarkdown(e.target.value)}
-          sx={{ flex: 1}}
-        />
-        <Button 
-          variant="contained" 
-          startIcon={<SaveIcon />} 
-          sx={{flex: 1,borderRadius: "4px"}}
+    <Box sx={{ height: "100vh", width: "100vw", p: 2 }}>
+      {isMobile ? (
+        // 📱 Mobile Layout (Stacked)
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <TextField
+            label="Note Title"
+            fullWidth
+            variant="outlined"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <TextField
+            label="Write Markdown"
+            multiline
+            fullWidth
+            minRows={10}
+            variant="outlined"
+            value={markdown}
+            onChange={(e) => setMarkdown(e.target.value)}
+            sx={{ flex: 1 }}
+          />
+          <Paper
+            elevation={3}
+            sx={{
+              p: 2,
+              borderRadius: "4px",
+              overflowY: "auto",
+              flex: 1,
+              mb: 2,
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              {title || "Preview"}
+            </Typography>
+            <Divider />
+            <Box sx={{ overflowY: "auto", height: "fit-content" }}>
+              <ReactMarkdown>{markdown}</ReactMarkdown>
+            </Box>
+          </Paper>
+        </Box>
+      ) : (
+        // 🖥️ Desktop Layout (Side by Side)
+        <Box sx={{ display: "flex", height: "98vh", gap: 2 }}>
+          {/* Left: Markdown Editor */}
+          <Box
+            sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}
+          >
+            <TextField
+              label="Note Title"
+              fullWidth
+              variant="outlined"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <TextField
+              label="Write Markdown"
+              multiline
+              fullWidth
+              minRows={35.5}
+              maxRows={35.5}
+              variant="outlined"
+              value={markdown}
+              onChange={(e) => setMarkdown(e.target.value)}
+              sx={{ flex: 1 }}
+            />
+          </Box>
+
+          {/* Right: Markdown Preview */}
+          <Paper
+            elevation={3}
+            sx={{
+              flex: 1,
+              p: 2,
+              overflowY: "auto",
+              borderRadius: "4px",
+              display: "flex",
+              flexDirection: "column",
+              maxHeight: "96.5vh"
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              {title || "Preview"}
+            </Typography>
+            <Divider />
+            <Box sx={{ flex: 1, overflowY: "auto" }}>
+              <ReactMarkdown>{markdown}</ReactMarkdown>
+            </Box>
+          </Paper>
+        </Box>
+      )}
+
+      {/* Floating Save Button (Always Visible) */}
+      <Box sx={{ display: "flex", position: "fixed", bottom: 16, right: 16, gap: 1 }}>
+        <Fab
+          color="primary"
+          sx={{ borderRadius: "30px" }}
           onClick={saveNote}
         >
-          Save Note
-        </Button>
+          <SaveIcon />
+        </Fab>
       </Box>
-
-      {/* Right: Markdown Preview */}
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          flex: 1, 
-          p: 3, 
-          overflowY: "auto", 
-          borderRadius: "4px", 
-          display: "flex", 
-          flexDirection: "column" 
-        }}
-      >
-        <Typography variant="h6" gutterBottom>
-          {title || "Preview"}
-        </Typography>
-        <Divider />
-        <Box sx={{ flex: 1, overflowY: "auto" }}>
-          <ReactMarkdown>{markdown}</ReactMarkdown>
-        </Box>
-      </Paper>
     </Box>
   );
 }
