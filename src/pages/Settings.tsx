@@ -4,7 +4,6 @@ import {
   Switch,
   Typography,
   Paper,
-  Button,
   Divider,
   Link as MuiLink,
   List,
