@@ -5,17 +5,17 @@ import Sidebar from "./components/Sidebar";
 import Editor from "./pages/Editor";
 import Settings from "./pages/Settings";
 
-type Note = {
+interface Note {
   title: string;
   content: string;
-};
+}
 
 function App({ mode, setMode }: { mode: "light" | "dark"; setMode: (mode: "light" | "dark") => void }) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   const addNote = () => {
-    const newNote = { title: `Note ${notes.length + 1}`, content: "" };
+    const newNote = { title: `Note ${String(notes.length + 1)}`, content: "" };
     const updatedNotes = [...notes, newNote];
     setNotes(updatedNotes);
     localStorage.setItem("notes", JSON.stringify(updatedNotes));

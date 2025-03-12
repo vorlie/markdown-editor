@@ -52,7 +52,7 @@ function Sidebar({
   useEffect(() => {
     const savedNotes = localStorage.getItem("notes");
     if (savedNotes) {
-      setNotes(JSON.parse(savedNotes));
+      setNotes(JSON.parse(savedNotes) as Note[]);
     }
   }, [setNotes]);
 
@@ -61,7 +61,7 @@ function Sidebar({
       {/* Toggle Button for Mobile */}
       {isMobile && (
         <IconButton
-          onClick={() => setOpen(true)}
+          onClick={() => { setOpen(true); }}
           sx={{ position: "absolute", top: 16, left: 16 }}
         >
           <MenuRoundedIcon />
@@ -71,7 +71,7 @@ function Sidebar({
       <Drawer
         variant={isMobile ? "temporary" : "permanent"}
         open={isMobile ? open : true}
-        onClose={() => setOpen(false)}
+        onClose={() => { setOpen(false); }}
         ModalProps={{ keepMounted: true }}
         sx={{
           width: isMobile ? 280 : open ? 280 : 80,
@@ -96,7 +96,7 @@ function Sidebar({
               mb: "5px",
             }}
           >
-            <IconButton onClick={() => setOpen(!open)}>
+            <IconButton onClick={() => { setOpen(!open); }}>
               {open ? <MenuOpenRoundedIcon /> : <MenuRoundedIcon />}
             </IconButton>
           </Box>

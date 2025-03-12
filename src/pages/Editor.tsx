@@ -33,8 +33,8 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
   );
 
   useEffect(() => {
-    setTitle(selectedNote?.title || "");
-    setMarkdown(selectedNote?.content || "");
+    setTitle(selectedNote?.title ?? "");
+    setMarkdown(selectedNote?.content ?? "");
   }, [selectedNote]);
 
   const saveNote = () => {
@@ -70,7 +70,7 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
             fullWidth
             variant="outlined"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => { setTitle(e.target.value); }}
           />
           <TextField
             label="Write Markdown"
@@ -79,7 +79,7 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
             minRows={10}
             variant="outlined"
             value={markdown}
-            onChange={(e) => setMarkdown(e.target.value)}
+            onChange={(e) => { setMarkdown(e.target.value); }}
             sx={{ flex: 1 }}
           />
           <Paper
@@ -113,7 +113,7 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
               fullWidth
               variant="outlined"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => { setTitle(e.target.value); }}
             />
             <TextField
               label="Write Markdown"
@@ -123,7 +123,7 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
               maxRows={35.5}
               variant="outlined"
               value={markdown}
-              onChange={(e) => setMarkdown(e.target.value)}
+              onChange={(e) => { setMarkdown(e.target.value); }}
               sx={{ flex: 1 }}
             />
           </Box>

@@ -23,7 +23,7 @@ function Settings({
   setMode: (mode: "light" | "dark") => void;
 }) {
   const [version, setVersion] = useState("");
-  const [dependencies, setDependencies] = useState<{ [key: string]: string }>(
+  const [dependencies, setDependencies] = useState<Record<string, string>>(
     {}
   );
 
@@ -43,7 +43,7 @@ function Settings({
           control={
             <Switch
               checked={mode === "dark"}
-              onChange={() => setMode(mode === "light" ? "dark" : "light")}
+              onChange={() => { setMode(mode === "light" ? "dark" : "light"); }}
             />
           }
           label="Dark Mode"
