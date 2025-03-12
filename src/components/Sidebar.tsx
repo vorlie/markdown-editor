@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Drawer,
   List,
+  ListItem,
   ListItemButton,
   ListItemText,
   ListItemIcon,
@@ -44,7 +45,9 @@ function Sidebar({
 }: SidebarProps) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("sm")
+  );
 
   useEffect(() => {
     const savedNotes = localStorage.getItem("notes");
@@ -57,7 +60,10 @@ function Sidebar({
     <>
       {/* Toggle Button for Mobile */}
       {isMobile && (
-        <IconButton onClick={() => setOpen(true)} sx={{ position: "absolute", top: 16, left: 16 }}>
+        <IconButton
+          onClick={() => setOpen(true)}
+          sx={{ position: "absolute", top: 16, left: 16 }}
+        >
           <MenuRoundedIcon />
         </IconButton>
       )}
@@ -82,7 +88,14 @@ function Sidebar({
       >
         {/* Sidebar Toggle Button (Desktop Only) */}
         {!isMobile && (
-          <Box sx={{ display: "flex", justifyContent: "flex-end", p: 0.5, mb: "5px" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              p: 0.5,
+              mb: "5px",
+            }}
+          >
             <IconButton onClick={() => setOpen(!open)}>
               {open ? <MenuOpenRoundedIcon /> : <MenuRoundedIcon />}
             </IconButton>
@@ -100,13 +113,18 @@ function Sidebar({
               borderRadius: open ? "12px" : "30px",
               margin: "4px",
               justifyContent: open ? "flex-start" : "center",
-              backgroundColor: location.pathname === "/settings" ? "rgba(0, 0, 0, 0.1)" : "transparent",
+              backgroundColor:
+                location.pathname === "/settings"
+                  ? "rgba(0, 0, 0, 0.1)"
+                  : "transparent",
             }}
           >
             <ListItemIcon sx={{ minWidth: "unset", justifyContent: "center" }}>
               <SettingsRoundedIcon />
             </ListItemIcon>
-            {open && <ListItemText sx={{ marginLeft: "8px" }} primary="Settings" />}
+            {open && (
+              <ListItemText sx={{ marginLeft: "8px" }} primary="Settings" />
+            )}
           </ListItemButton>
 
           <ListItemButton
@@ -116,13 +134,18 @@ function Sidebar({
               borderRadius: open ? "12px" : "30px",
               margin: "4px",
               justifyContent: open ? "flex-start" : "center",
-              backgroundColor: location.pathname === "/" ? "rgba(0, 0, 0, 0.1)" : "transparent",
+              backgroundColor:
+                location.pathname === "/"
+                  ? "rgba(0, 0, 0, 0.1)"
+                  : "transparent",
             }}
           >
             <ListItemIcon sx={{ minWidth: "unset", justifyContent: "center" }}>
               <EditNoteRoundedIcon />
             </ListItemIcon>
-            {open && <ListItemText sx={{ marginLeft: "8px" }} primary="Editor" />}
+            {open && (
+              <ListItemText sx={{ marginLeft: "8px" }} primary="Editor" />
+            )}
           </ListItemButton>
 
           <ListItemButton
@@ -136,7 +159,9 @@ function Sidebar({
             <ListItemIcon sx={{ minWidth: "unset", justifyContent: "center" }}>
               <AddRoundedIcon />
             </ListItemIcon>
-            {open && <ListItemText sx={{ marginLeft: "8px" }} primary="New Note" />}
+            {open && (
+              <ListItemText sx={{ marginLeft: "8px" }} primary="New Note" />
+            )}
           </ListItemButton>
         </List>
 
@@ -146,36 +171,53 @@ function Sidebar({
         <Box sx={{ flexGrow: 1, overflowY: "auto", minHeight: 0 }}>
           <List>
             {notes.map((note, index) => (
-              <ListItemButton
-                component={Link}
-                to="/"
+              <ListItem
                 key={index}
-                onClick={() => {
-                  setSelectedNote(note);
-                  if (isMobile) setOpen(false);
-                }}
-                sx={{
-                  borderRadius: open ? "12px" : "30px",
-                  margin: "4px",
-                  justifyContent: open ? "flex-start" : "center",
-                  backgroundColor: selectedNote === note ? "rgba(0, 0, 0, 0.1)" : "transparent",
-                }}
+                secondaryAction={
+                  selectedNote === note &&
+                  open && (
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteNote(index);
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )
+                }
+                disablePadding
               >
-                <ListItemIcon sx={{ minWidth: "unset", justifyContent: "center" }}>
-                  <NotesRoundedIcon />
-                </ListItemIcon>
-                {open && <ListItemText sx={{ marginLeft: "8px" }} primary={note.title} />}
-                {open && (
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteNote(index);
-                    }}
+                <ListItemButton
+                  component={Link}
+                  to="/"
+                  onClick={() => {
+                    setSelectedNote(note);
+                    if (isMobile) setOpen(false);
+                  }}
+                  sx={{
+                    borderRadius: open ? "12px" : "30px",
+                    margin: "4px",
+                    justifyContent: open ? "flex-start" : "center",
+                    backgroundColor:
+                      selectedNote === note
+                        ? "rgba(0, 0, 0, 0.1)"
+                        : "transparent",
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{ minWidth: "unset", justifyContent: "center" }}
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                )}
-              </ListItemButton>
+                    <NotesRoundedIcon />
+                  </ListItemIcon>
+                  {open && (
+                    <ListItemText
+                      sx={{ marginLeft: "8px" }}
+                      primary={note.title}
+                    />
+                  )}
+                </ListItemButton>
+              </ListItem>
             ))}
           </List>
         </Box>
