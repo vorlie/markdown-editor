@@ -64,7 +64,7 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
     <Box sx={{ height: "100vh", width: "100vw", p: 2 }}>
       {isMobile ? (
         // 📱 Mobile Layout (Stacked)
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt:6 }}>
           <TextField
             label="Note Title"
             fullWidth

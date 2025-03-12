@@ -14,7 +14,7 @@ function Settings({
   setMode: (mode: "light" | "dark") => void;
 }) {
   return (
-    <Container sx={{ flex: 1, p: 3 }}>
+    <Container sx={{ flex: 1, p: 3, mt: { xs: 6, sm: 0 } }}>
       <Typography variant="h4" gutterBottom>
         Settings
       </Typography>
