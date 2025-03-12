@@ -83,7 +83,7 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
             sx={{ flex: 1 }}
           />
           <Paper
-            elevation={3}
+            elevation={0}
             sx={{
               p: 2,
               borderRadius: "4px",
@@ -130,7 +130,7 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
 
           {/* Right: Markdown Preview */}
           <Paper
-            elevation={3}
+            elevation={0}
             sx={{
               flex: 1,
               p: 2,
