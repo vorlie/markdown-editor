@@ -103,28 +103,27 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
         </Box>
       ) : (
         // 🖥️ Desktop Layout (Side by Side)
-        <Box sx={{ display: "flex", height: "98vh", gap: 2 }}>
+        <Box sx={{ display: "flex", height: "96.8vh", gap: 1 }}>
           {/* Left: Markdown Editor */}
           <Box
-            sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}
+            sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1, }}
           >
             <TextField
               label="Note Title"
               fullWidth
-              variant="outlined"
+              variant="filled"
               value={title}
               onChange={(e) => { setTitle(e.target.value); }}
+              sx={{ overflowY: "auto" }}
             />
             <TextField
               label="Write Markdown"
               multiline
               fullWidth
-              minRows={35.5}
-              maxRows={35.5}
-              variant="outlined"
+              variant="filled"
               value={markdown}
               onChange={(e) => { setMarkdown(e.target.value); }}
-              sx={{ flex: 1 }}
+              sx={{ flex: 1, maxHeight: "96.8vh", overflowY: "auto", }}
             />
           </Box>
 
@@ -135,17 +134,16 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
               flex: 1,
               p: 2,
               overflowY: "auto",
-              borderRadius: "4px",
+              borderRadius: "12px",
               display: "flex",
               flexDirection: "column",
-              maxHeight: "96.5vh"
             }}
           >
             <Typography variant="h6" gutterBottom>
               {title || "Preview"}
             </Typography>
             <Divider />
-            <Box sx={{ flex: 1, overflowY: "auto" }}>
+            <Box sx={{ flex: 1, overflowY: "auto"  }}>
               <ReactMarkdown>{markdown}</ReactMarkdown>
             </Box>
           </Paper>
