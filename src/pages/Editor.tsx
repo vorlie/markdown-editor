@@ -11,6 +11,9 @@ import {
   Theme,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github-dark.css";
 
 interface Note {
   title: string;
@@ -97,7 +100,10 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
             </Typography>
             <Divider />
             <Box sx={{ overflowY: "auto", height: "fit-content" }}>
-              <ReactMarkdown>{markdown}</ReactMarkdown>
+            <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+                >{markdown}</ReactMarkdown>
             </Box>
           </Paper>
         </Box>
@@ -144,7 +150,10 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
             </Typography>
             <Divider />
             <Box sx={{ flex: 1, overflowY: "auto"  }}>
-              <ReactMarkdown>{markdown}</ReactMarkdown>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+                >{markdown}</ReactMarkdown>
             </Box>
           </Paper>
         </Box>
