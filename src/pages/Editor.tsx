@@ -48,23 +48,23 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
 
   const saveNote = () => {
     try {
-      if (!title.trim() && !markdown.trim())
-        setAlert({ message: "Note cannot be empty!", severity: "warning" });
-      return; // Prevent empty notes
+      if (!title.trim() && !markdown.trim()) return; // Prevent empty notes
 
-      let updatedNotes: Note[];
       if (!selectedNote) {
-        // Create a new note
+        // Create a new note if none is selected
         const newNote = { title: title || "Untitled", content: markdown };
-        updatedNotes = [...notes, newNote];
-      } else {
-        // Update existing note
-        updatedNotes = notes.map((note) =>
-          selectedNote && note.title === selectedNote.title
-            ? { ...note, title, content: markdown }
-            : note
-        );
+        const updatedNotes = [...notes, newNote];
+        setNotes(updatedNotes);
+        localStorage.setItem("notes", JSON.stringify(updatedNotes));
+        return;
       }
+  
+      // Update existing note
+      const updatedNotes = notes.map((note) =>
+        note.title === selectedNote.title
+          ? { ...note, title, content: markdown }
+          : note
+      );
 
       setNotes(updatedNotes);
       localStorage.setItem("notes", JSON.stringify(updatedNotes));
