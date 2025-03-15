@@ -9,6 +9,8 @@ import {
   Divider,
   useMediaQuery,
   Theme,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import remarkGfm from "remark-gfm";
@@ -29,6 +31,10 @@ interface EditorProps {
 function Editor({ selectedNote, setNotes, notes }: EditorProps) {
   const [title, setTitle] = useState("");
   const [markdown, setMarkdown] = useState("");
+  const [alert, setAlert] = useState<{
+    message: string;
+    severity: "success" | "error" | "warning";
+  } | null>(null);
 
   // Check if screen size is small (mobile)
   const isMobile = useMediaQuery((theme: Theme) =>
@@ -41,39 +47,47 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
   }, [selectedNote]);
 
   const saveNote = () => {
-    if (!title.trim() && !markdown.trim()) return; // Prevent empty notes
+    try {
+      if (!title.trim() && !markdown.trim())
+        setAlert({ message: "Note cannot be empty!", severity: "warning" });
+      return; // Prevent empty notes
 
-    if (!selectedNote) {
-      // Create a new note if none is selected
-      const newNote = { title: title || "Untitled", content: markdown };
-      const updatedNotes = [...notes, newNote];
+      let updatedNotes: Note[];
+      if (!selectedNote) {
+        // Create a new note
+        const newNote = { title: title || "Untitled", content: markdown };
+        updatedNotes = [...notes, newNote];
+      } else {
+        // Update existing note
+        updatedNotes = notes.map((note) =>
+          selectedNote && note.title === selectedNote.title
+            ? { ...note, title, content: markdown }
+            : note
+        );
+      }
+
       setNotes(updatedNotes);
       localStorage.setItem("notes", JSON.stringify(updatedNotes));
-      return;
+
+      // Show success message
+      setAlert({ message: "Note saved successfully!", severity: "success" });
+    } catch {
+      setAlert({ message: "Failed to save note!", severity: "error" });
     }
-
-    // Update existing note
-    const updatedNotes = notes.map((note) =>
-      note.title === selectedNote.title
-        ? { ...note, title, content: markdown }
-        : note
-    );
-
-    setNotes(updatedNotes);
-    localStorage.setItem("notes", JSON.stringify(updatedNotes));
   };
 
   return (
     <Box sx={{ height: "100vh", width: "100vw", p: 2 }}>
       {isMobile ? (
-        // 📱 Mobile Layout (Stacked)
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt:6 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 6 }}>
           <TextField
             label="Note Title"
             fullWidth
             variant="outlined"
             value={title}
-            onChange={(e) => { setTitle(e.target.value); }}
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
           />
           <TextField
             label="Write Markdown"
@@ -82,7 +96,9 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
             minRows={10}
             variant="outlined"
             value={markdown}
-            onChange={(e) => { setMarkdown(e.target.value); }}
+            onChange={(e) => {
+              setMarkdown(e.target.value);
+            }}
             sx={{ flex: 1 }}
           />
           <Paper
@@ -100,26 +116,28 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
             </Typography>
             <Divider />
             <Box sx={{ overflowY: "auto", height: "fit-content" }}>
-            <ReactMarkdown
+              <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeHighlight]}
-                >{markdown}</ReactMarkdown>
+              >
+                {markdown}
+              </ReactMarkdown>
             </Box>
           </Paper>
         </Box>
       ) : (
-        // 🖥️ Desktop Layout (Side by Side)
         <Box sx={{ display: "flex", height: "96.8vh", gap: 1 }}>
-          {/* Left: Markdown Editor */}
           <Box
-            sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1, }}
+            sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1 }}
           >
             <TextField
               label="Note Title"
               fullWidth
               variant="filled"
               value={title}
-              onChange={(e) => { setTitle(e.target.value); }}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
               sx={{ overflowY: "auto" }}
             />
             <TextField
@@ -128,12 +146,12 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
               fullWidth
               variant="filled"
               value={markdown}
-              onChange={(e) => { setMarkdown(e.target.value); }}
-              sx={{ flex: 1, maxHeight: "96.8vh", overflowY: "auto", }}
+              onChange={(e) => {
+                setMarkdown(e.target.value);
+              }}
+              sx={{ flex: 1, maxHeight: "96.8vh", overflowY: "auto" }}
             />
           </Box>
-
-          {/* Right: Markdown Preview */}
           <Paper
             elevation={0}
             sx={{
@@ -149,26 +167,53 @@ function Editor({ selectedNote, setNotes, notes }: EditorProps) {
               {title || "Preview"}
             </Typography>
             <Divider />
-            <Box sx={{ flex: 1, overflowY: "auto"  }}>
+            <Box sx={{ flex: 1, overflowY: "auto" }}>
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeHighlight]}
-                >{markdown}</ReactMarkdown>
+              >
+                {markdown}
+              </ReactMarkdown>
             </Box>
           </Paper>
         </Box>
       )}
 
-      {/* Floating Save Button (Always Visible) */}
-      <Box sx={{ display: "flex", position: "fixed", bottom: 16, right: 16, gap: 1 }}>
-        <Fab
-          color="primary"
-          sx={{ borderRadius: "30px" }}
-          onClick={saveNote}
-        >
+      {/* Floating Save Button */}
+      <Box
+        sx={{
+          display: "flex",
+          position: "fixed",
+          bottom: 16,
+          right: 16,
+          gap: 1,
+        }}
+      >
+        <Fab color="primary" sx={{ borderRadius: "30px" }} onClick={saveNote}>
           <SaveIcon />
         </Fab>
       </Box>
+
+      {/* Snackbar Alert */}
+      <Snackbar
+        open={!!alert}
+        autoHideDuration={3000}
+        onClose={() => {
+          setAlert(null);
+        }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        {alert ? (
+          <Alert
+            severity={alert.severity}
+            onClose={() => {
+              setAlert(null);
+            }}
+          >
+            {alert.message}
+          </Alert>
+        ) : undefined}
+      </Snackbar>
     </Box>
   );
 }
