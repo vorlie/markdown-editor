@@ -15,7 +15,6 @@ import {
 import SaveIcon from "@mui/icons-material/Save";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import "highlight.js/styles/github-dark.css";
 
 interface Note {
   title: string;
