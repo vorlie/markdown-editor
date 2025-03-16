@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material/styles";
+import "highlight.js/styles/github-dark.css";
 
 export const getTheme = (mode: "light" | "dark") =>
   createTheme({

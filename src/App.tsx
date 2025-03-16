@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Box } from "@mui/material";
 import Sidebar from "./components/Sidebar";
 import Editor from "./pages/Editor";
 import Settings from "./pages/Settings";
-import "highlight.js/styles/github-dark.css";
 
 interface Note {
   title: string;
@@ -14,22 +13,6 @@ interface Note {
 function App({ mode, setMode }: { mode: "light" | "dark"; setMode: (mode: "light" | "dark") => void }) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
-  const [themeLoaded, setThemeLoaded] = useState(false);
-
-  useEffect(() => {
-    const loadTheme = async () => {
-      if (mode === "dark") {
-        await import("highlight.js/styles/github-dark.css");
-      } else {
-        await import("highlight.js/styles/github.css");
-      }
-      setThemeLoaded(true); // Force re-render
-    };
-
-    loadTheme().catch((error: unknown) => {
-      console.error("Error loading theme:", error);
-    });
-  }, [mode]);
 
   const addNote = () => {
     const newNote = { title: `Note ${String(notes.length + 1)}`, content: "" };
